@@ -8,9 +8,12 @@ public class Stars {
             int n = scanner.nextInt();
             int m = scanner.nextInt();
             String template = scanner.next();
-            String end = template + "\n";
             for (int i = 1; i <= n * m; i++) {
-                System.out.print(i % m == 0 ? end : template);
+                if (i % m == 0) {
+                    System.out.println(template);
+                } else {
+                    System.out.print(template);
+                }
             }
         }
     }
