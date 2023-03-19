@@ -16,7 +16,12 @@ public class DatedMapImpl implements DatedMap {
 
     @Override
     public String get(String key) {
-        return values.get(key).getValue();
+        final DatedValue datedValue = values.get(key);
+        if (datedValue == null) {
+            return null;
+        } else {
+            return datedValue.getValue();
+        }
     }
 
     @Override
