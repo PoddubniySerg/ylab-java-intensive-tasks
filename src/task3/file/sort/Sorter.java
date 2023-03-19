@@ -14,7 +14,8 @@ import java.util.TreeMap;
 
 public class Sorter {
 
-    private static final int PART_SIZE = 1000000;
+    private static final int PART_SIZE = 1_000_000;
+    private static final int BUFFER_SIZE = 10_000_000;
     private static final String TEMP_FILE_NAME = "temp";
     private static final String TEMP_FILE_TYPE = ".txt";
     private static final String TEMP_DIRECTORY = "./src/task3/file/sort";
@@ -62,15 +63,19 @@ public class Sorter {
         Files.deleteIfExists(path);
         Files.createFile(path);
         while (!readers.isEmpty()) {
-            final Long min = readers.keySet().stream().findFirst().orElseThrow();
-            final BufferedReader reader = readers.remove(min);
-            Files.writeString(path, min + "\n", StandardOpenOption.APPEND);
-            final String next = reader.readLine();
-            if (next != null) {
-                readers.put(Long.parseLong(next), reader);
-            } else {
-                reader.close();
+            final StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < BUFFER_SIZE && !readers.isEmpty(); i++) {
+                final Long min = readers.keySet().stream().findFirst().orElseThrow();
+                final BufferedReader reader = readers.remove(min);
+                stringBuilder.append(min).append("\n");
+                final String next = reader.readLine();
+                if (next != null) {
+                    readers.put(Long.parseLong(next), reader);
+                } else {
+                    reader.close();
+                }
             }
+            Files.writeString(path, stringBuilder.toString(), StandardOpenOption.APPEND);
         }
         return sortedFile;
     }
