@@ -35,7 +35,7 @@ public class TransliteratorUtils {
         map.put('Ш', "SH");
         map.put('Щ', "SHCH");
         map.put('Ы', "Y");
-        map.put('Ь', "-");
+        map.put('Ь', "");
         map.put('Ъ', "IE");
         map.put('Э', "E");
         map.put('Ю', "IU");
