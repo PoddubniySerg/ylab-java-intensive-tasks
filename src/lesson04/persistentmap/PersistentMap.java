@@ -5,17 +5,17 @@ import java.util.List;
 
 public interface PersistentMap {
 
-  void init(String name);
+    void init(String name);
 
-  boolean containsKey(String key) throws SQLException;
+    boolean containsKey(String key) throws SQLException;
 
-  List<String> getKeys() throws SQLException;
+    List<String> getKeys() throws SQLException;
 
-  String get(String key) throws SQLException;
+    String get(String key) throws SQLException;
 
-  void remove(String key) throws SQLException;
+    void remove(String key) throws SQLException;
 
-  void put(String key, String value) throws SQLException;
+    void put(String key, String value) throws SQLException;
 
-  void clear() throws SQLException;
+    void clear() throws SQLException;
 }

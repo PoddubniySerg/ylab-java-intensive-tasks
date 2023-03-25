@@ -19,7 +19,8 @@ public class PersistenceMapTest {
         System.out.println("2й список ключей после добавления элементов: " + persistentMap.getKeys());
         System.out.println("Значение по 2му ключу 2й мапы: " + persistentMap.get(secondMap + secondKey));
         persistentMap.remove(secondMap + secondKey);
-        System.out.println("2й список ключей после удаления одного из элементов: " + persistentMap.getKeys());
+        System.out.println("2й список ключей после удаления second_key: " + persistentMap.getKeys());
+        System.out.println("Значение по 2му ключу 2й мапы после удаления second_key: " + persistentMap.get(secondMap + secondKey));
         persistentMap.clear();
         System.out.println("2й список ключей после очистки 2го списка: " + persistentMap.getKeys());
         persistentMap.init(firstMap);
@@ -43,9 +44,9 @@ public class PersistenceMapTest {
         final String firstKey = "_first_key";
         final String secondKey = "_second_key";
         final String firstValue = "_first_value";
-        final String secondValue = "_second_value";
+        final String secondValue = null;
         map.init(name);
         map.put(name + firstKey, name + firstValue);
-        map.put(name + secondKey, name + secondValue);
+        map.put(name + secondKey, secondValue);
     }
 }

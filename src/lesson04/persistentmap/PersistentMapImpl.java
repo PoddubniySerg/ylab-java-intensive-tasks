@@ -27,119 +27,109 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public boolean containsKey(String key) throws SQLException {
-        if (!isInitialized()) {
-            return false;
-        }
-        final String getQuery = "select count(*) > 0 from persistent_map where map_name=? and key=?;";
-        final List<String> params = List.of(this.name, key);
-        boolean isContain = false;
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(getQuery)) {
-            setParams(params, preparedStatement);
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                isContain = resultSet.getBoolean(1);
-                resultSet.close();
-            }
-            return isContain;
-        }
+        return getKeys().contains(key);
     }
 
     @Override
     public List<String> getKeys() throws SQLException {
-        final List<String> keys = new ArrayList<>();
-        if (isInitialized()) {
+        try {
+            assertMapInit();
             final String getKeysQuery = "select key from persistent_map where map_name=?;";
-            try (final Connection connection = dataSource.getConnection();
-                 final PreparedStatement statement = connection.prepareStatement(getKeysQuery)) {
-                statement.setString(1, this.name);
-                final ResultSet resultSet = statement.executeQuery();
-                while (resultSet.next()) {
-                    keys.add(resultSet.getString(1));
-                }
-                resultSet.close();
-            }
+            return getResult(getKeysQuery, this.name);
+        } catch (MapNotInitException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
         }
-        return keys;
     }
 
     @Override
     public String get(String key) throws SQLException {
-        if (!isInitialized()) {
-            return null;
-        }
-        final String getQuery = "select value from persistent_map where map_name=? and key=?;";
-        final List<String> params = List.of(this.name, key);
-        String result = null;
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(getQuery)) {
-            setParams(params, preparedStatement);
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                result = resultSet.getString(1);
-                resultSet.close();
+        try {
+            assertMapInit();
+            String result;
+            final String getQuery = "select value from persistent_map where map_name=? and key=?;";
+            final List<String> results = getResult(getQuery, this.name, key);
+            if (!results.isEmpty()) {
+                result = results.get(0);
+            } else {
+                result = "Значение не найдено";
             }
             return result;
+        } catch (MapNotInitException e) {
+            System.out.println(e.getMessage());
+            return "Мапа не определена, выполните init()";
         }
     }
 
     @Override
     public void remove(String key) throws SQLException {
-        if (!isInitialized()) {
-            return;
-        }
-        final String removeQuery = "delete from persistent_map where map_name=? and key=?;";
-        final List<String> params = List.of(this.name, key);
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(removeQuery)) {
-            setParams(params, preparedStatement);
-            preparedStatement.execute();
+        try {
+            assertMapInit();
+            final String removeQuery = "delete from persistent_map where map_name=? and key=?;";
+            executeQuery(removeQuery, this.name, key);
+        } catch (MapNotInitException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     @Override
     public void put(String key, String value) throws SQLException {
-        if (!isInitialized()) {
-            return;
-        }
-        if (containsKey(key)) {
-            remove(key);
-        }
-        final String insertQuery = "insert into persistent_map(map_name, key, value) values (?, ?, ?);";
-        final List<String> params = List.of(this.name, key, value);
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
-            setParams(params, preparedStatement);
-            preparedStatement.execute();
+        try {
+            assertMapInit();
+            final String insertQuery = "insert into persistent_map(map_name, key, value) values (?, ?, ?);";
+            if (containsKey(key)) {
+                remove(key);
+            }
+            executeQuery(insertQuery, this.name, key, value);
+        } catch (MapNotInitException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     @Override
     public void clear() throws SQLException {
-        if (!isInitialized()) {
-            return;
+        try {
+            assertMapInit();
+            final String clearQuery = "delete from persistent_map where map_name=?;";
+            executeQuery(clearQuery, this.name);
+        } catch (MapNotInitException e) {
+            System.out.println(e.getMessage());
         }
-        final String clearQuery = "delete from persistent_map where map_name=?;";
+    }
+
+    private void executeQuery(String query, String... params) throws SQLException {
         try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement preparedStatement = connection.prepareStatement(clearQuery)
+             final PreparedStatement preparedStatement = connection.prepareStatement(query)
         ) {
-            preparedStatement.setString(1, this.name);
+            setParams(preparedStatement, params);
             preparedStatement.execute();
         }
     }
 
-    private boolean isInitialized() {
-        if (name == null) {
-            System.out.println("Map is not initialized");
-            return false;
-        } else {
-            return true;
+    private List<String> getResult(String query, String... params) throws SQLException {
+        final List<String> results = new ArrayList<>();
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement preparedStatement = connection.prepareStatement(query)
+        ) {
+            setParams(preparedStatement, params);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                results.add(resultSet.getString(1));
+            }
+            resultSet.close();
+            return results;
         }
     }
 
-    private void setParams(List<String> params, PreparedStatement statement) throws SQLException {
-        for (int i = 0; i < params.size(); i++) {
-            statement.setString(i + 1, params.get(i));
+    private void assertMapInit() throws MapNotInitException {
+        if (this.name == null) {
+            throw new MapNotInitException("Map is not initialized");
+        }
+    }
+
+    private void setParams(PreparedStatement statement, String... params) throws SQLException {
+        for (int i = 0; i < params.length; i++) {
+            statement.setString(i + 1, params[i]);
         }
     }
 }
