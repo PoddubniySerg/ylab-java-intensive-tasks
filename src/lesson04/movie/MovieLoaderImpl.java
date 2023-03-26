@@ -35,7 +35,7 @@ public class MovieLoaderImpl implements MovieLoader {
     private List<Movie> readFile(File file) throws IOException {
         final List<Movie> movies = new ArrayList<>();
         try (final FileInputStream inputStream = new FileInputStream(file);
-             final Scanner scanner = new Scanner(inputStream)) {
+             final Scanner scanner = new Scanner(inputStream, "cp1251")) {
             final String delimiter = ";";
             while (scanner.hasNext()) {
                 final String[] values = scanner.nextLine().split(delimiter);
