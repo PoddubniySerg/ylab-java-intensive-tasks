@@ -2,8 +2,11 @@ package lesson04.eventsourcing;
 
 public class Message {
 
-    private final String action;
-    private final String body;
+    private String action;
+    private String body;
+
+    public Message() {
+    }
 
     public Message(String action, String body) {
         this.action = action;
@@ -17,5 +20,4 @@ public class Message {
     public String getBody() {
         return body;
     }
-
 }

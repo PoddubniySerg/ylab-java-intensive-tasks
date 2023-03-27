@@ -44,9 +44,9 @@ public class PersistenceMapTest {
         final String firstKey = "_first_key";
         final String secondKey = "_second_key";
         final String firstValue = "_first_value";
-        final String secondValue = null;
+        final String secondValue = "_second_value";
         map.init(name);
         map.put(name + firstKey, name + firstValue);
-        map.put(name + secondKey, secondValue);
+        map.put(name + secondKey, name + secondValue);
     }
 }
