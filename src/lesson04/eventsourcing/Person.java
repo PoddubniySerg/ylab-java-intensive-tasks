@@ -47,4 +47,9 @@ public class Person {
   public void setMiddleName(String middleName) {
     this.middleName = middleName;
   }
+
+  @Override
+  public String toString() {
+    return "Person: id=" + id + ", firstName=" + name + ", lastName=" + lastName + ", middleName=" + middleName + "\n";
+  }
 }
