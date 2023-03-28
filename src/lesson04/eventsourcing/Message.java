@@ -3,21 +3,21 @@ package lesson04.eventsourcing;
 public class Message {
 
     private String action;
-    private String body;
+    private String content;
 
     public Message() {
     }
 
-    public Message(String action, String body) {
+    public Message(String action, String content) {
         this.action = action;
-        this.body = body;
+        this.content = content;
     }
 
     public String getAction() {
         return action;
     }
 
-    public String getBody() {
-        return body;
+    public String getContent() {
+        return content;
     }
 }

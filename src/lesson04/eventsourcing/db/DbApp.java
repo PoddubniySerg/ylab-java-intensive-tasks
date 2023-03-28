@@ -32,6 +32,7 @@ public class DbApp {
         ObjectMapper mapper = new ObjectMapper();
         try (final Connection connection = connectionFactory.newConnection();
              final Channel channel = connection.createChannel()) {
+            channel.queueDeclare(QUEUE_NAME, true, false, false, null);
             while (!Thread.currentThread().isInterrupted()) {
                 GetResponse response = channel.basicGet(QUEUE_NAME, true);
                 if (response != null) {
@@ -46,11 +47,13 @@ public class DbApp {
     private static void execute(Message message, Dao dao, ObjectMapper mapper) throws Exception {
         try {
             if (message.getAction().equals(Actions.SAVE.getAction())) {
-                final Person person = mapper.readValue(message.getBody(), Person.class);
+                final Person person = mapper.readValue(message.getContent(), Person.class);
                 dao.save(person);
-            } else {
-                final Long id = Long.parseLong(message.getBody());
+            } else if (message.getAction().equals(Actions.DELETE.getAction())){
+                final Long id = Long.parseLong(message.getContent());
                 dao.delete(id);
+            } else {
+                System.out.println(message.getContent());
             }
         } catch (PersonNotFoundException e) {
             System.err.println(e.getMessage());

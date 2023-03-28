@@ -3,7 +3,8 @@ package lesson04.eventsourcing;
 public enum Actions {
 
     SAVE("save"),
-    DELETE("delete");
+    DELETE("delete"),
+    PRINT("print");
 
     private final String action;
 
