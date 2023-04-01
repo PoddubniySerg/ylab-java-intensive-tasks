@@ -4,15 +4,16 @@ import io.ylab.intensive.lesson05.eventsourcing.Person;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class DataBaseClient {
+
+    private static final String TABLE_NAME = "person";
+    private static final String[] TABLE_TYPES = new String[]{"TABLE"};
+    private static final String TABLE_NAME_KEY = "TABLE_NAME";
 
     private final DataSource dataSource;
 
@@ -20,21 +21,24 @@ public class DataBaseClient {
         this.dataSource = dataSource;
     }
 
-    public Person findPerson(Long personId) throws SQLException {
-        final String query = "select * from person where person_id=?;";
+    public Person findPerson(Long personId) throws SQLException, TableNotExistException {
+        final String query = String.format("select * from %s where person_id=?;", TABLE_NAME);
         final List<Person> persons = execute(query, personId);
         return persons.stream().findFirst().orElse(null);
     }
 
-    public List<Person> findAll() throws SQLException {
-        final String query = "select * from person;";
+    public List<Person> findAll() throws SQLException, TableNotExistException {
+        final String query = String.format("select * from %s;", TABLE_NAME);
         return execute(query, null);
     }
 
-    private List<Person> execute(String query, Long personId) throws SQLException {
+    private List<Person> execute(String query, Long personId) throws SQLException, TableNotExistException {
         final List<Person> persons = new ArrayList<>();
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement statement = connection.prepareStatement(query)) {
+            if (tableNotExist(connection)) {
+                throw new TableNotExistException("Таблица '" + TABLE_NAME + "' не найдена в базе данных");
+            }
             if (personId != null) {
                 statement.setLong(1, personId);
             }
@@ -48,6 +52,19 @@ public class DataBaseClient {
                 persons.add(person);
             }
             return persons;
+        }
+    }
+
+    private boolean tableNotExist(Connection connection) throws SQLException {
+        final DatabaseMetaData metaData = connection.getMetaData();
+        try (final ResultSet resultSet =
+                     metaData.getTables(null, null, null, TABLE_TYPES)) {
+            while (resultSet.next()) {
+                if (resultSet.getString(TABLE_NAME_KEY).equals(TABLE_NAME)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

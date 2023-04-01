@@ -42,7 +42,8 @@ public class PersonProcessor implements PersonApi, Printer {
     public Person findPerson(Long personId) {
         try {
             return dbClient.findPerson(personId);
-        } catch (SQLException e) {
+        } catch (SQLException | TableNotExistException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -51,7 +52,7 @@ public class PersonProcessor implements PersonApi, Printer {
     public List<Person> findAll() {
         try {
             return dbClient.findAll();
-        } catch (SQLException e) {
+        } catch (SQLException | TableNotExistException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
