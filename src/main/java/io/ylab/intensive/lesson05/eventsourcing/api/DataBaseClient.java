@@ -13,7 +13,6 @@ public class DataBaseClient {
 
     private static final String TABLE_NAME = "person";
     private static final String[] TABLE_TYPES = new String[]{"TABLE"};
-    private static final String TABLE_NAME_KEY = "TABLE_NAME";
 
     private final DataSource dataSource;
 
@@ -33,12 +32,12 @@ public class DataBaseClient {
     }
 
     private List<Person> execute(String query, Long personId) throws SQLException, TableNotExistException {
-        final List<Person> persons = new ArrayList<>();
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement statement = connection.prepareStatement(query)) {
             if (tableNotExist(connection)) {
                 throw new TableNotExistException("Таблица '" + TABLE_NAME + "' не найдена в базе данных");
             }
+            final List<Person> persons = new ArrayList<>();
             if (personId != null) {
                 statement.setLong(1, personId);
             }
@@ -58,13 +57,8 @@ public class DataBaseClient {
     private boolean tableNotExist(Connection connection) throws SQLException {
         final DatabaseMetaData metaData = connection.getMetaData();
         try (final ResultSet resultSet =
-                     metaData.getTables(null, null, null, TABLE_TYPES)) {
-            while (resultSet.next()) {
-                if (resultSet.getString(TABLE_NAME_KEY).equals(TABLE_NAME)) {
-                    return false;
-                }
-            }
-            return true;
+                     metaData.getTables(null, null, TABLE_NAME, TABLE_TYPES)) {
+            return !resultSet.next();
         }
     }
 }
