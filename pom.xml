@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.ylab</groupId>
-    <artifactId>practice</artifactId>
+    <groupId>io.ylab</groupId>
+    <artifactId>intensive</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
@@ -35,6 +35,11 @@
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.7</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>6.0.7</version>
         </dependency>
     </dependencies>
 
