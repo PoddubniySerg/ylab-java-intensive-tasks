@@ -9,6 +9,7 @@
 5. [Задания к занятию 05 (Основы Spring)](#задания-к-занятию-05-основы-spring)
 
 ## Задания к занятию 01 (Основы Java)
+[Вернуться](#оглавление)
 
 1. **[Stars](./src/main/java/io/ylab/intensive/lesson01/Stars.java)**
 
@@ -29,6 +30,7 @@
 ![img.png](Лекции/pictures/guess2.png)
 
 ## Задания к занятию 02 (ООП)
+[Вернуться](#оглавление)
 
 1. **[Sequences](./src/main/java/io/ylab/intensive/lesson02/sequences)**
 
@@ -53,6 +55,7 @@
 ![stats-accumulator.png](Лекции/pictures/stats-accumulator.png)
 
 ## Задания к занятию 03 (Коллекции и работа с файлами)
+[Вернуться](#оглавление)
 
 1. **[Transliterator](./src/main/java/io/ylab/intensive/lesson03/transliterator)**
 
@@ -76,6 +79,7 @@
 ![file-sort.png](Лекции/pictures/file-sort.png)
 
 ## Задания к занятию 04 (PostgreSQL & RabbitMQ)
+[Вернуться](#оглавление)
 
 1. **[Movie Database](./src/main/java/io/ylab/intensive/lesson04/movie)**
    > Скачать файл https://perso.telecom-paristech.fr/eagan/class/igr204/data/film.csv
@@ -95,6 +99,7 @@
 ![eventsourcing.png](Лекции/pictures/eventsourcing.png)
 
 ## Задания к занятию 05 (Основы Spring)
+[Вернуться](#оглавление)
 
 1. **[Event Sourcing](./src/main/java/io/ylab/intensive/lesson05/eventsourcing)**
    > Задача из предыдущего ДЗ. Должно быть реализована с разбиением на Spring
